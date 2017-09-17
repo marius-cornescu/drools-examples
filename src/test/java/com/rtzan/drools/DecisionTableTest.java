@@ -2,9 +2,9 @@ package com.rtzan.drools;
 
 import com.rtzan.drools.model.Customer;
 import com.rtzan.drools.model.Product;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.kie.internal.KnowledgeBase;
 import org.kie.internal.builder.DecisionTableInputType;
 import org.kie.internal.runtime.StatelessKnowledgeSession;
@@ -16,13 +16,16 @@ public class DecisionTableTest {
 
     private LegacyDecisionTable decisionTable;
 
-    @BeforeEach
-    void setUp() {
+    @Before
+    public void setUp() {
+        System.out.println("-----------\n");
         decisionTable = new LegacyDecisionTable();
     }
 
     @Test
     public void testExcelDecisionTable() throws Exception {
+        System.out.println("++++++++++++\n");
+
         KnowledgeBase knowledgeBase = decisionTable.createKnowledgeBase("decision-table/shopping_cart_customer.xls", DecisionTableInputType.XLS);
         StatelessKnowledgeSession session = knowledgeBase.newStatelessKnowledgeSession();
 
@@ -30,8 +33,8 @@ public class DecisionTableTest {
     }
 
     @Test
-    @Disabled("CSV file format is wrong")
-    void testCsvDecisionTable() throws Exception {
+    @Ignore("CSV file format is wrong")
+    public void testCsvDecisionTable() throws Exception {
         KnowledgeBase knowledgeBase = decisionTable.createKnowledgeBase("decision-table/shopping_cart_customer.csv", DecisionTableInputType.CSV);
         StatelessKnowledgeSession session = knowledgeBase.newStatelessKnowledgeSession();
 

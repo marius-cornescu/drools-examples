@@ -37,8 +37,8 @@
 
 
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
@@ -48,7 +48,7 @@
     <properties>
         <drools.version>6.2.0.Final</drools.version>
         <jbpm.version>6.2.0.Final</jbpm.version>
-        <junit.version>RELEASE</junit.version>
+        <junit.version>4.12</junit.version>
 
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>

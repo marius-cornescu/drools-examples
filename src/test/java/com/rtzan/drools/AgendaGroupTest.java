@@ -1,8 +1,9 @@
 package com.rtzan.drools;
 
 import com.rtzan.drools.model.Customer;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
@@ -14,8 +15,8 @@ import org.kie.api.runtime.rule.QueryResultsRow;
  */
 public class AgendaGroupTest {
 
-    @BeforeEach
-    void setUp() {
+    @Before
+    public void setUp() {
 
     }
 
