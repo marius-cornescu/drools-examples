@@ -1,0 +1,10 @@
+﻿RuleSet,com.rtzan.drools,,
+Import,"com.rtzan.drools.model.*",,
+Notes,Decision tables for shoping cart,,
+RuleTable Shopping Cart,,,
+NAME,CONDITION,CONDITION,ACTION
+,$customer:Customer,,
+,coupon,isNew,$customer.getCart().addDiscount(((double)$customer.getCart().getTotalPrice())*$param);
+NAME,coupon code,new customer,Set Discount
+If has coupon, 5% discount,DISC01,,0.05
+If new, 2% discount,,TRUE,0.2
