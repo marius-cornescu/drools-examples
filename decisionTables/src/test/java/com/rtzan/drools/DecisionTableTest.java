@@ -37,7 +37,7 @@ class DecisionTableTest {
     }
 
     private void basicTestFlow(StatelessKnowledgeSession session) {
-        Customer customer = new Customer();
+        Customer customer = new Customer("ana_01");
         Product p1 = new Product("Laptop", 15000);
         Product p2 = new Product("Mobile", 5000);
         Product p3 = new Product("Books", 2000);
@@ -50,7 +50,7 @@ class DecisionTableTest {
 
         System.out.println("First Customer\n" + customer);
 
-        Customer newCustomer = Customer.newCustomer();
+        Customer newCustomer = new Customer("ana_02");
         newCustomer.addItem(p1, 1);
         newCustomer.addItem(p2, 2);
 
