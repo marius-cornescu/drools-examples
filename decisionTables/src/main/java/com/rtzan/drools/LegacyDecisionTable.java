@@ -9,7 +9,7 @@ import org.kie.internal.builder.KnowledgeBuilder;
 import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.kie.internal.io.ResourceFactory;
 
-public class LegacyDroolsDecisionTable {
+public class LegacyDecisionTable {
 
     public KnowledgeBase createKnowledgeBase(String fileName, DecisionTableInputType fileType)
             throws Exception {

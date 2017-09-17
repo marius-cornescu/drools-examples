@@ -1,37 +1,57 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.rtzan.drools</groupId>
-	<artifactId>decisionTables</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.drools</groupId>
-			<artifactId>knowledge-api</artifactId>
-			<version>${drools.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.drools</groupId>
-			<artifactId>drools-core</artifactId>
-			<version>${drools.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.drools</groupId>
-			<artifactId>drools-compiler</artifactId>
-			<version>${drools.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
-			<version>${junit.version}</version>
-		</dependency>
-	</dependencies>
+    <groupId>com.rtzan.drools</groupId>
+    <artifactId>decisionTables</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
 
-	<properties>
-		<drools.version>6.2.0.Final</drools.version>
-		<jbpm.version>6.2.0.Final</jbpm.version>
-		<junit.version>RELEASE</junit.version>
-	</properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>knowledge-api</artifactId>
+            <version>${drools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-core</artifactId>
+            <version>${drools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-compiler</artifactId>
+            <version>${drools.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-api</artifactId>
+            <version>${drools.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-decisiontables</artifactId>
+            <version>${drools.version}</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <properties>
+        <drools.version>6.2.0.Final</drools.version>
+        <jbpm.version>6.2.0.Final</jbpm.version>
+        <junit.version>RELEASE</junit.version>
+
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
 
 </project>

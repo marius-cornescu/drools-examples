@@ -1,6 +1,5 @@
-package com.rtzan.drools.decisiotab;
+package com.rtzan.drools;
 
-import com.rtzan.drools.LegacyDroolsDecisionTable;
 import com.rtzan.drools.model.Customer;
 import com.rtzan.drools.model.Product;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,18 +11,18 @@ import org.kie.internal.runtime.StatelessKnowledgeSession;
 /**
  * Created by ${USERNAME} on 9/17/17.
  */
-class DroolsDecisionTableExampleTest {
+class DecisionTableTest {
 
-    private LegacyDroolsDecisionTable decisionTable;
+    private LegacyDecisionTable decisionTable;
 
     @BeforeEach
     void setUp() {
-        decisionTable = new LegacyDroolsDecisionTable();
+        decisionTable = new LegacyDecisionTable();
     }
 
     @Test
     void testExcelDecisionTable() throws Exception {
-        KnowledgeBase knowledgeBase = decisionTable.createKnowledgeBase("shopping_cart_customer.xls", DecisionTableInputType.XLS);
+        KnowledgeBase knowledgeBase = decisionTable.createKnowledgeBase("decision-table/shopping_cart_customer.xls", DecisionTableInputType.XLS);
         StatelessKnowledgeSession session = knowledgeBase.newStatelessKnowledgeSession();
 
         basicTestFlow(session);
@@ -31,7 +30,7 @@ class DroolsDecisionTableExampleTest {
 
     @Test
     void testCsvDecisionTable() throws Exception {
-        KnowledgeBase knowledgeBase = decisionTable.createKnowledgeBase("shopping_cart_customer.csv", DecisionTableInputType.CSV);
+        KnowledgeBase knowledgeBase = decisionTable.createKnowledgeBase("decision-table/shopping_cart_customer.csv", DecisionTableInputType.CSV);
         StatelessKnowledgeSession session = knowledgeBase.newStatelessKnowledgeSession();
 
         basicTestFlow(session);
