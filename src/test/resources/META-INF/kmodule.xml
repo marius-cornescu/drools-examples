@@ -3,4 +3,7 @@
     <kbase name="rules" packages="agenda-groups">
         <ksession name="ksession-rules"/>
     </kbase>
+    <kbase name="DecisionTableKB" packages="rules">
+        <ksession name="DecisionTableKS" type="stateless"/>
+    </kbase>
 </kmodule>

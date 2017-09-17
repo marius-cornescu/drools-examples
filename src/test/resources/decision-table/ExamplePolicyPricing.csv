@@ -1,0 +1,34 @@
+,,,,,,,
+,,RuleSet,com.rtzan.drools,,,,
+,,Notes,This decision table is for working out some basic prices and pretending actuaries don't exist,,,,
+,,,,,,,
+,,RuleTable Pricing bracket,,,,,
+,,CONDITION,CONDITION,CONDITION,CONDITION,ACTION,ACTION
+,,Driver,,,policy: Policy,,
+,,"age >= $1, age <= $2",locationRiskProfile,priorClaims,type,policy.setBasePrice($param);,"System.out.println(""$param"");"
+,Base pricing rules,Age Bracket,Location risk profile,Number of prior claims,Policy type applying for,Base $ AUD,Record Reason
+,Young safe package,"18, 24",LOW,1,COMPREHENSIVE,450,
+,,"18, 24",MED,,FIRE_THEFT,200,Priors not relevant
+,,"18,24",MED,0,COMPREHENSIVE,300,
+,,"18,24",LOW,,FIRE_THEFT,150,
+,,"18,24",LOW,0,COMPREHENSIVE,150,Safe driver discount
+,Young risk,"18,24",MED,1,COMPREHENSIVE,700,
+,,"18,24",HIGH,0,COMPREHENSIVE,700,Location risk
+,,"18,24",HIGH,,FIRE_THEFT,550,Location risk
+,Mature drivers,"25,30",,0,COMPREHENSIVE,120,Cheapest possible
+,,"25,30",,1,COMPREHENSIVE,300,
+,,"25,30",,2,COMPREHENSIVE,590,
+,,"25,35",,3,THIRD_PARTY,800,High risk
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,RuleTable Discounts,,,,,
+,,CONDITION,CONDITION,CONDITION,ACTION,,
+,,Driver,,policy: Policy,policy,,
+,,"age >= $1, age <= $2",priorClaims,type,applyDiscount($param),,
+,Promotional discount rules,Age Bracket,Number of prior claims,Policy type applying for,Discount %,,
+,Rewards for safe drivers,"18,24",0,COMPREHENSIVE,1,,
+,,"18,24",0,FIRE_THEFT,2,,
+,,"25,30",1,COMPREHENSIVE,5,,
+,,"25,30",2,COMPREHENSIVE,1,,
+,,"25,30",0,COMPREHENSIVE,20,,

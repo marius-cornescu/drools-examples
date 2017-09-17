@@ -1,68 +1,46 @@
 package com.rtzan.drools;
 
 import com.rtzan.drools.model.Customer;
+import com.rtzan.drools.model.Driver;
+import com.rtzan.drools.model.Policy;
 import com.rtzan.drools.model.Product;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.kie.api.KieServices;
+import org.kie.api.runtime.KieContainer;
+import org.kie.api.runtime.StatelessKieSession;
 import org.kie.internal.KnowledgeBase;
 import org.kie.internal.builder.DecisionTableInputType;
 import org.kie.internal.runtime.StatelessKnowledgeSession;
+
+import java.util.Arrays;
 
 /**
  * Created by ${USERNAME} on 9/17/17.
  */
 public class DecisionTableTest {
 
-    private LegacyDecisionTable decisionTable;
-
     @Before
     public void setUp() {
-        System.out.println("-----------\n");
-        decisionTable = new LegacyDecisionTable();
     }
 
     @Test
-    public void testExcelDecisionTable() throws Exception {
-        System.out.println("++++++++++++\n");
+    public void testDecisionTable() throws Exception {
+        KieContainer kc = KieServices.Factory.get().getKieClasspathContainer();
+        System.out.println(kc.verify().getMessages().toString());
+        StatelessKieSession ksession = kc.newStatelessKieSession( "DecisionTableKS");
 
-        KnowledgeBase knowledgeBase = decisionTable.createKnowledgeBase("decision-table/shopping_cart_customer.xls", DecisionTableInputType.XLS);
-        StatelessKnowledgeSession session = knowledgeBase.newStatelessKnowledgeSession();
+        //now create some test data
+        Driver driver = new Driver();
+        Policy policy = new Policy();
 
-        basicTestFlow(session);
-    }
+        ksession.execute( Arrays.asList( new Object[]{driver, policy} ) );
 
-    @Test
-    @Ignore("CSV file format is wrong")
-    public void testCsvDecisionTable() throws Exception {
-        KnowledgeBase knowledgeBase = decisionTable.createKnowledgeBase("decision-table/shopping_cart_customer.csv", DecisionTableInputType.CSV);
-        StatelessKnowledgeSession session = knowledgeBase.newStatelessKnowledgeSession();
+        System.out.println( "BASE PRICE IS: " + policy.getBasePrice() );
+        System.out.println( "DISCOUNT IS: " + policy.getDiscountPercent() );
 
-        basicTestFlow(session);
-    }
-
-    private void basicTestFlow(StatelessKnowledgeSession session) {
-        Customer customer = new Customer("ana_01");
-        Product p1 = new Product("Laptop", 15000);
-        Product p2 = new Product("Mobile", 5000);
-        Product p3 = new Product("Books", 2000);
-        customer.addItem(p1, 1);
-        customer.addItem(p2, 2);
-        customer.addItem(p3, 5);
-        customer.setCoupon("DISC01");
-
-        session.execute(customer);
-
-        System.out.println("First Customer\n" + customer);
-
-        Customer newCustomer = new Customer("ana_02");
-        newCustomer.addItem(p1, 1);
-        newCustomer.addItem(p2, 2);
-
-        session.execute(newCustomer);
-
-        System.out.println("*********************************");
-        System.out.println("Second Customer\n" + customer);
+        int price = policy.getBasePrice();
     }
 
 }
