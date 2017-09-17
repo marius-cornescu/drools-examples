@@ -9,6 +9,8 @@ import org.kie.internal.builder.KnowledgeBuilder;
 import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.kie.internal.io.ResourceFactory;
 
+import java.net.URL;
+
 public class LegacyDecisionTable {
 
     public KnowledgeBase createKnowledgeBase(String fileName, DecisionTableInputType fileType)
@@ -19,8 +21,11 @@ public class LegacyDecisionTable {
 
         KnowledgeBuilder knowledgeBuilder = KnowledgeBuilderFactory
                 .newKnowledgeBuilder();
+
+        URL spreadsheet = getClass().getResource(fileName);
+
         knowledgeBuilder.add(ResourceFactory
-                        .newClassPathResource(fileName),
+                        .newUrlResource(spreadsheet),
                 ResourceType.DTABLE, dtconf);
 
         if (knowledgeBuilder.hasErrors()) {

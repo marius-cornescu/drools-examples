@@ -12,7 +12,7 @@ import org.kie.api.runtime.rule.QueryResultsRow;
 /**
  * This is a sample class to launch a rule.
  */
-class AgendaGroupTest {
+public class AgendaGroupTest {
 
     @BeforeEach
     void setUp() {
@@ -20,7 +20,7 @@ class AgendaGroupTest {
     }
 
     @Test
-    void testAgendaGroup() throws Exception {
+    public void testAgendaGroup() throws Exception {
         KieSession knowledgeSession = null;
         try {
             // load up the knowledge base
