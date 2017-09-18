@@ -2,23 +2,34 @@ package com.rtzan.drools;
 
 import com.rtzan.drools.model.Customer;
 import com.rtzan.drools.model.Product;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
 import org.kie.internal.KnowledgeBase;
 import org.kie.internal.builder.DecisionTableInputType;
 import org.kie.internal.runtime.StatelessKnowledgeSession;
+
 
 /**
  * Created by ${USERNAME} on 9/17/17.
  */
 public class LegacyDecisionTableTest {
 
-    private LegacyDecisionTable decisionTable;
+    //~ ----------------------------------------------------------------------------------------------------------------
+    //~ Instance fields 
+    //~ ----------------------------------------------------------------------------------------------------------------
+
+    private LegacyDecisionTableHelper decisionTable;
+
+    //~ ----------------------------------------------------------------------------------------------------------------
+    //~ Methods 
+    //~ ----------------------------------------------------------------------------------------------------------------
 
     @Before
     public void setUp() {
-        decisionTable = new LegacyDecisionTable();
+        decisionTable = new LegacyDecisionTableHelper();
     }
 
     @Test
