@@ -4,29 +4,29 @@ import com.rtzan.drools.model.*
  
 rule "Group_01_Rule_01"
     agenda-group "Group_01"
-	when
-		customer : Customer( flagged == true && name == "ana_01" )
-	then
-	    customer.setFlagged(false);
-	    System.out.println("> Group_01_Rule_01 just fired for " + customer);
-		
+    when
+        customer : Customer( flagged == true && name == "ana_01" )
+    then
+        customer.setFlagged(false);
+        System.out.println("> Group_01_Rule_01 just fired for " + customer);
+        
 end
 
 rule "Group_02_Rule_01"
     agenda-group "Group_02"
-	when
-		customer : Customer( flagged == true )
-	then
-		System.out.println("> Group_02_Rule_01 just fired for " + customer);
+    when
+        customer : Customer( flagged == true )
+    then
+        System.out.println("> Group_02_Rule_01 just fired for " + customer);
 end
 
 rule "Group_02_Rule_02"
     agenda-group "Group_02"
-	when
-		customer : Customer( flagged == true && name == "ana_02" )
-	then
-	    customer.setFlagged(false);
-		System.out.println("> Group_02_Rule_02 just fired for " + customer);
+    when
+        customer : Customer( flagged == true && name == "ana_02" )
+    then
+        customer.setFlagged(false);
+        System.out.println("> Group_02_Rule_02 just fired for " + customer);
 end
 
 query "FindClassNameStartingWith" (Class theClass)

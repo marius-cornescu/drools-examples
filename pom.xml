@@ -46,8 +46,7 @@
     </dependencies>
 
     <properties>
-        <drools.version>6.2.0.Final</drools.version>
-        <jbpm.version>6.2.0.Final</jbpm.version>
+        <drools.version>6.4.0.Final</drools.version>
         <junit.version>4.12</junit.version>
 
         <maven.compiler.source>1.8</maven.compiler.source>

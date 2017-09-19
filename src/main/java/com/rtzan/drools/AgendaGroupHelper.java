@@ -37,7 +37,7 @@ public class AgendaGroupHelper {
 
         KieContainer kieContainer = kieContainerFactory.createKieContainer(drlFilePaths);
 
-        return kieContainer.newKieSession(kieSessionName);
+        return (kieSessionName == null) ? kieContainer.newKieSession() : kieContainer.newKieSession(kieSessionName);
     }
 
 }

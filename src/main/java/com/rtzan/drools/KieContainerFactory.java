@@ -9,7 +9,7 @@ import org.kie.api.builder.Message;
 import org.kie.api.runtime.KieContainer;
 
 
-public class KieContainerFactory {
+class KieContainerFactory {
 
     //~ ----------------------------------------------------------------------------------------------------------------
     //~ Instance fields 
@@ -21,7 +21,7 @@ public class KieContainerFactory {
     //~ Methods 
     //~ ----------------------------------------------------------------------------------------------------------------
 
-    public KieContainer createKieContainer(Map<String, String> drlFilePaths) {
+    KieContainer createKieContainer(Map<String, String> drlFilePaths) {
 
         this.kieServices = KieServices.Factory.get();
 
@@ -32,8 +32,7 @@ public class KieContainerFactory {
         KieFileSystem kfs = kieServices.newKieFileSystem();
 
         for (Map.Entry<String, String> drlFileEntry : drlFilePaths.entrySet()) {
-            String filePath = "agenda-groups/" + drlFileEntry.getKey();
-            kfs.write(filePath, drlFileEntry.getValue());
+            kfs.write(drlFileEntry.getKey(), drlFileEntry.getValue());
         }
 
         KieBuilder kieBuilder = kieServices.newKieBuilder(kfs).buildAll();

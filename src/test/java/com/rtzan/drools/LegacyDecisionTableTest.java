@@ -33,6 +33,7 @@ public class LegacyDecisionTableTest {
     }
 
     @Test
+    @Ignore
     public void testExcelDecisionTable() throws Exception {
         KnowledgeBase knowledgeBase = decisionTable.createKnowledgeBase("decision-table/shopping_cart_customer.xls", DecisionTableInputType.XLS);
         StatelessKnowledgeSession session = knowledgeBase.newStatelessKnowledgeSession();
