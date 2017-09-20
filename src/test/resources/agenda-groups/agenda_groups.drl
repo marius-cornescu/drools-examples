@@ -15,9 +15,9 @@ end
 rule "Group_02_Rule_01"
     agenda-group "Group_02"
     when
-        customer : Customer( flagged == false && hasProductsInCart() == true && name str[startsWith] "ana_"  )
+        customer : Customer( flagged == false && hasProductsInCart() == true && name str[startsWith] "a"  )
     then
-        System.out.println("\t> Group_02_Rule_01 just fired for " + customer);
+        System.out.println("\t> Group_02_Rule_01 just fired for " + customer + " == FLAG");
         customer.setFlagged(true);
 end
 
@@ -36,14 +36,14 @@ rule "Group_04_Rule_01"
     when
         customer : Customer( flagged == false && hasProductsInCart() == true && name str[startsWith] "ana_"  )
     then
-        System.out.println("\t> Group_04_Rule_01 just fired for " + customer);
+        System.out.println("\t> Group_04_Rule_01 just fired for " + customer + " == FLAG");
         customer.setFlagged(true);
 end
 
 rule "Group_05_Rule_01"
     agenda-group "Group_05"
     when
-        customer : Customer( flagged == false && hasProductsInCart() == true && name str[startsWith] "ana_0" )
+        customer : Customer( flagged == false && hasProductsInCart() == false && name str[startsWith] "ana_" )
     then
         System.out.println("\t> Group_05_Rule_01 just fired for " + customer + " == FLAG");
         customer.setFlagged(true);
@@ -53,8 +53,10 @@ end
 rule "Group_06_Rule_01"
     agenda-group "Group_06"
     when
-        customer : Customer( flagged == false && hasProductsInCart() == true && name str[startsWith] "m_"  )
+        customer : Customer( flagged == false && hasProductsInCart() == false && name str[startsWith] "ana_" )
     then
-        System.out.println("\t> Group_06_Rule_01 just fired for " + customer);
+        System.out.println("\t> Group_06_Rule_01 just fired for " + customer + " == FLAG");
         customer.setFlagged(true);
+        
 end
+

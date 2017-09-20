@@ -9,6 +9,7 @@ import com.rtzan.drools.model.Customer;
 import com.rtzan.drools.model.Product;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import org.kie.api.KieServices;
@@ -33,42 +34,25 @@ public class AgendaGroupTest {
     }
 
     @Test
-    public void testAgendaGroup() throws Exception {
+    @Ignore
+    public void testBasicAgendaGroup() throws Exception {
         try {
-            //KieSession kSession = AgendaGroupHelper.createKieSession(null, buildRuleFiles());
-            KieSession kSession = buildKieSession2();
-            CustomerEventListener customerEventListener = new CustomerEventListener();
+            KieSession kSession = AgendaGroupHelper.createKieSession(null, buildRuleFiles());
+            //KieSession kSession = buildSessionFromFiles(buildRuleFiles());
+            DefaultCustomerEventListener customerEventListener = new DefaultCustomerEventListener();
             kSession.addEventListener(customerEventListener);
             //
-            kSession.getAgenda().getAgendaGroup("MAIN").setFocus();
-            //
-            final List<Customer> customers = getCustomers();
+            Customer customer01 = new Customer("ana_01");
+            customer01.addItem(new Product("book", 10), 1);
 
-            for (Customer customer : customers) {
-                kSession.insert(customer);
-            }
+            Customer customer02 = new Customer("ana_02");
 
-            List<String> agendaGroups = Arrays.asList("Group_01", "Group_02", "Group_03", "Group_04", "Group_05", "Group_06", "Group_07");
-            //List<String> agendaGroups = AgendaGroupHelper.getAgendaGroupLabels(kSession);
+            Customer customer03 = new Customer("ana_03");
+            customer03.addItem(new Product("book", 10), 1);
 
-            int groupIndex = 0;
-            for (String group : agendaGroups) {
-                System.out.println("## " + (++groupIndex) + " ## Running with [" + group + "] group in focus");
+            final List<Customer> customers = Arrays.asList(customer01, customer02, customer03);
 
-                kSession.getAgenda().getAgendaGroup(group).setFocus();
-
-                // remove facts that were flagged
-                kSession.fireAllRules(match -> {
-                    Customer customer = (Customer) match.getObjects().get(0);
-                    return !customer.isFlagged();
-                });
-
-                // work on flagged facts, no need for them to wait for next run
-                workOnFlaggedCustomers(customerEventListener.getCustomerList());
-                customerEventListener.reset();
-            }
-
-            System.out.println("*************************");
+            processCustomers(kSession, customerEventListener, customers);
 
             //runQuery(kSession);
 
@@ -78,16 +62,101 @@ public class AgendaGroupTest {
         }
     }
 
-    List<Customer> getCustomers() {
-        Customer customer01 = new Customer("ana_01");
-        customer01.addItem(new Product("book", 10), 1);
+    @Test
+    public void testAgendaGroupSomeMatch() throws Exception {
+        try {
+            KieSession kSession = buildSessionFromFiles(buildRuleFiles());
+            DefaultCustomerEventListener customerEventListener = new DefaultCustomerEventListener();
+            kSession.addEventListener(customerEventListener);
+            //
+            Customer customer01 = new Customer("ana_01");
+            customer01.addItem(new Product("book", 10), 1);
 
-        Customer customer02 = new Customer("ana_02");
+            Customer customer02 = new Customer("ana_02");
 
-        Customer customer03 = new Customer("ana_03");
-        customer03.addItem(new Product("book", 10), 1);
+            Customer customer03 = new Customer("ana_03");
+            customer03.addItem(new Product("book", 10), 1);
 
-        return Arrays.asList(customer01, customer02, customer03);
+            Customer customer04 = new Customer("eric_01");
+            customer04.addItem(new Product("book", 10), 1);
+
+            final List<Customer> customers = Arrays.asList(customer01, customer02, customer03, customer04);
+
+            processCustomers(kSession, customerEventListener, customers);
+
+            kSession.dispose();
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testEarlyMatchNotTriggerAllGroups() throws Exception {
+        try {
+            KieSession kSession = buildSessionFromFiles(buildRuleFiles());
+            DefaultCustomerEventListener customerEventListener = new DefaultCustomerEventListener();
+            kSession.addEventListener(customerEventListener);
+            //
+            Customer customer01 = new Customer("ana_01");
+            customer01.addItem(new Product("book", 10), 1);
+
+            Customer customer02 = new Customer("ana_02");
+
+            Customer customer03 = new Customer("ana_03");
+            customer03.addItem(new Product("book", 10), 1);
+
+            final List<Customer> customers = Arrays.asList(customer01, customer02, customer03);
+
+            processCustomers(kSession, customerEventListener, customers);
+
+            kSession.dispose();
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
+    public void processCustomers(KieSession kSession, CustomerEventListener eventListener, final List<Customer> customers) {
+        for (Customer customer : customers) {
+            kSession.insert(customer);
+        }
+
+        int activeCustomerCount = customers.size();
+
+        //List<String> agendaGroups = Arrays.asList("Group_01", "Group_02", "Group_03", "Group_04", "Group_05", "Group_06", "Group_07");
+        List<String> agendaGroups = AgendaGroupHelper.getAgendaGroupLabels(kSession);
+
+        int groupIndex = 0;
+        for (String group : agendaGroups) {
+            System.out.println("\n## " + (++groupIndex) + " ## Running with [" + group + "] group in focus" + "| >>> activeCustomerCount = " + activeCustomerCount);
+
+            kSession.getAgenda().getAgendaGroup(group).setFocus();
+
+            // remove facts that were flagged
+            kSession.fireAllRules(match -> {
+                Customer customer = (Customer) match.getObjects().get(0);
+                return !customer.isFlagged();
+            });
+
+            // work on flagged facts, no need for them to wait for next run
+            int processedCustomers = workOnFlaggedCustomers(eventListener.getCustomerList());
+            eventListener.reset();
+            activeCustomerCount -= processedCustomers;
+
+            if (activeCustomerCount == 0) {
+                break;
+            }
+        }
+
+        if (activeCustomerCount == 0) {
+            System.out.println("####    ALL PROCESSED    ####");
+        } else {
+            System.out.println("####    REMAINING Customers = " + activeCustomerCount + "    ####");
+        }
+    }
+
+    private int countCustomers(KieSession kSession) {
+        QueryResults results = kSession.getQueryResults("getCustomers");
+        return results.size();
     }
 
     private void runQuery(KieSession kSession) {
@@ -100,15 +169,16 @@ public class AgendaGroupTest {
         }
     }
 
-    private void workOnFlaggedCustomers(List<Customer> flaggedCustomers) {
-        System.out.println("In workOnFlaggedCustomers(" + flaggedCustomers.size() + ")");
+    private int workOnFlaggedCustomers(List<Customer> flaggedCustomers) {
+        System.out.println("\t\tIn workOnFlaggedCustomers(" + flaggedCustomers.size() + ")");
+        int workedCustomers = 0;
 
         for (Customer flaggedCustomer : flaggedCustomers) {
-            System.out.println(">> workOnFlaggedCustomer = " + flaggedCustomer);
-
+            System.out.println("\t\t\t>> workOnFlaggedCustomer = " + flaggedCustomer);
+            workedCustomers++;
         }
 
-        flaggedCustomers.clear();
+        return workedCustomers;
     }
 
     private KieSession buildKieSession() {
@@ -118,10 +188,10 @@ public class AgendaGroupTest {
         return kContainer.newKieSession("ksession-rules");
     }
 
-    private KieSession buildKieSession2() {
+    private KieSession buildSessionFromFiles(Map<String, String> drlFilePaths) {
         // load up the knowledge base
         KieServices ks = KieServices.Factory.get();
-        KieContainer kContainer = new LoadFileToMemory().build(ks, buildRuleFiles());
+        KieContainer kContainer = new LoadFileToMemory().build(ks, drlFilePaths);
         return kContainer.newKieSession();
     }
 

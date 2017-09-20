@@ -40,6 +40,6 @@ query "FindClassNameStartingWith" (Class theClass)
     object: Object(class == theClass)
 end
 
-query "FindFlaggedCustomers"
+query "FindFlaggedCustomers" ()
     customer: Customer( flagged == true )
 end

@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.poi.util.StringUtil;
-
 import org.drools.core.common.DefaultAgenda;
 import org.drools.core.spi.AgendaGroup;
 
@@ -30,6 +28,11 @@ public class AgendaGroupHelper {
         }
 
         return agendaGroups.stream().filter(s -> !"MAIN".equals(s)).sorted().collect(Collectors.toList());
+    }
+
+    public static int countAgendaGroups(KieSession knowledgeSession) {
+        AgendaGroup[] agendas = ((DefaultAgenda) knowledgeSession.getAgenda()).getAgendaGroups();
+        return agendas.length;
     }
 
     public static KieSession createKieSession(String kieSessionName, Map<String, String> drlFilePaths) {
