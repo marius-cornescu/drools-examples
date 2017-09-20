@@ -17,7 +17,7 @@ public class Customer {
 
     public Customer(String name) {
         this.name = name;
-        this.flagged = true;
+        this.flagged = false;
     }
 
     //~ ----------------------------------------------------------------------------------------------------------------
@@ -53,6 +53,10 @@ public class Customer {
 
     public Cart getCart() {
         return cart;
+    }
+
+    public boolean hasProductsInCart() {
+        return (cart != null) && (cart.getCartItems().size() > 0);
     }
 
     @Override

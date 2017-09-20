@@ -3,7 +3,7 @@ package com.rtzan.drools
 import com.rtzan.drools.model.*
  
 rule "Group_01_Rule_01"
-    agenda-group "XGroup_01"
+    agenda-group "Group_01"
     when
         customer : Customer( flagged == false && hasProductsInCart() == true && name str[startsWith] "ana_0" )
     then
@@ -13,7 +13,7 @@ rule "Group_01_Rule_01"
 end
 
 rule "Group_02_Rule_01"
-    agenda-group "XGroup_02"
+    agenda-group "Group_02"
     when
         customer : Customer( flagged == false && hasProductsInCart() == true && name str[startsWith] "ana_"  )
     then
@@ -21,32 +21,16 @@ rule "Group_02_Rule_01"
         customer.setFlagged(true);
 end
 
-rule "Group_03_Rule_01"
-    agenda-group "XGroup_03"
+rule "Group_02_Rule_02"
+    agenda-group "Group_02"
     when
         customer : Customer( flagged == false && hasProductsInCart() == false && name str[startsWith] "ana_1" )
     then
-        System.out.println("\t> Group_03_Rule_01 just fired for " + customer + " == FLAG");
+        System.out.println("\t> Group_02_Rule_02 just fired for " + customer + " == FLAG");
         customer.setFlagged(true);
 end
 
-rule "Group_04_Rule_01"
-    agenda-group "XGroup_04"
-    when
-        customer : Customer( flagged == false && hasProductsInCart() == false && name str[startsWith] "ana_12" )
-    then
-        System.out.println("\t> Group_04_Rule_01 just fired for " + customer + " == FLAG");
-        customer.setFlagged(true);
-end
 
-rule "Group_05_Rule_01"
-    agenda-group "XGroup_05"
-    when
-        customer : Customer( flagged == false && hasProductsInCart() == false && name str[startsWith] "ana_15" )
-    then
-        System.out.println("\t> Group_05_Rule_01 just fired for " + customer + " == FLAG");
-        customer.setFlagged(true);
-end
 
 
 
