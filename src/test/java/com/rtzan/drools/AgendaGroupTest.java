@@ -40,13 +40,16 @@ public class AgendaGroupTest {
             CustomerEventListener customerEventListener = new CustomerEventListener();
             kSession.addEventListener(customerEventListener);
             //
+            kSession.getAgenda().getAgendaGroup("MAIN").setFocus();
+            //
             final List<Customer> customers = getCustomers();
 
             for (Customer customer : customers) {
                 kSession.insert(customer);
             }
 
-            List<String> agendaGroups = AgendaGroupHelper.getAgendaGroupLabels(kSession);
+            List<String> agendaGroups = Arrays.asList("Group_01", "Group_02", "Group_03", "Group_04", "Group_05", "Group_06", "Group_07");
+            //List<String> agendaGroups = AgendaGroupHelper.getAgendaGroupLabels(kSession);
 
             int groupIndex = 0;
             for (String group : agendaGroups) {
@@ -67,7 +70,7 @@ public class AgendaGroupTest {
 
             System.out.println("*************************");
 
-            runQuery(kSession);
+            //runQuery(kSession);
 
             kSession.dispose();
         } catch (Throwable t) {
