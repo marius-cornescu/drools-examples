@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.rtzan.drools.agenda.CustomerProcessor;
 import com.rtzan.drools.model.Customer;
 import com.rtzan.drools.model.Product;
+import com.rtzan.drools.salience.CustomerGrouper;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -22,15 +22,14 @@ import org.kie.api.runtime.rule.QueryResultsRow;
 
 
 /**
- * This is a sample class to launch a rule.
  */
-public class AgendaGroupTest {
+public class SalienceGroupingTest {
 
     //~ ----------------------------------------------------------------------------------------------------------------
     //~ Instance fields 
     //~ ----------------------------------------------------------------------------------------------------------------
 
-    private CustomerProcessor customerProcessor;
+    private CustomerGrouper customerGrouper;
 
     //~ ----------------------------------------------------------------------------------------------------------------
     //~ Methods 
@@ -38,7 +37,7 @@ public class AgendaGroupTest {
 
     @Before
     public void setUp() {
-        customerProcessor = new CustomerProcessor();
+        customerGrouper = new CustomerGrouper();
     }
 
     @Test
@@ -60,7 +59,7 @@ public class AgendaGroupTest {
 
             final List<Customer> customers = Arrays.asList(customer01, customer02, customer03);
 
-            customerProcessor.process(kSession, customerEventListener, customers);
+            processCustomers(kSession, customerEventListener, customers);
 
             //runQuery(kSession);
 
@@ -70,57 +69,54 @@ public class AgendaGroupTest {
         }
     }
 
-    @Test
-    public void testAgendaGroupSomeMatch() throws Exception {
-        try {
-            KieSession kSession = buildSessionFromFiles(buildRuleFiles());
-            DefaultCustomerEventListener customerEventListener = new DefaultCustomerEventListener();
-            kSession.addEventListener(customerEventListener);
-            //
-            Customer customer01 = new Customer("ana_01");
-            customer01.addItem(new Product("book", 10), 1);
+    public void processCustomers(KieSession kSession, CustomerEventListener eventListener, final List<Customer> customers) {
+        for (Customer customer : customers) {
+            kSession.insert(customer);
+        }
 
-            Customer customer02 = new Customer("ana_02");
+        int activeCustomerCount = customers.size();
 
-            Customer customer03 = new Customer("ana_03");
-            customer03.addItem(new Product("book", 10), 1);
+        System.out.println("\n## " + " ## Running focus" + "| >>> activeCustomerCount = " + activeCustomerCount);
 
-            Customer customer04 = new Customer("eric_01");
-            customer04.addItem(new Product("book", 10), 1);
+        kSession.fireAllRules();
 
-            final List<Customer> customers = Arrays.asList(customer01, customer02, customer03, customer04);
+        // work on flagged facts, no need for them to wait for next run
+        int processedCustomers = workOnFlaggedCustomers(eventListener.getCustomerList());
+        eventListener.reset();
+        activeCustomerCount -= processedCustomers;
 
-            customerProcessor.process(kSession, customerEventListener, customers);
-
-            kSession.dispose();
-        } catch (Throwable t) {
-            t.printStackTrace();
+        if (activeCustomerCount == 0) {
+            System.out.println("####    ALL PROCESSED    ####");
+        } else {
+            System.out.println("####    REMAINING Customers = " + activeCustomerCount + "    ####");
         }
     }
 
-    @Test
-    public void testEarlyMatchNotTriggerAllGroups() throws Exception {
-        try {
-            KieSession kSession = buildSessionFromFiles(buildRuleFiles());
-            DefaultCustomerEventListener customerEventListener = new DefaultCustomerEventListener();
-            kSession.addEventListener(customerEventListener);
-            //
-            Customer customer01 = new Customer("ana_01");
-            customer01.addItem(new Product("book", 10), 1);
+    private int countCustomers(KieSession kSession) {
+        QueryResults results = kSession.getQueryResults("getCustomers");
+        return results.size();
+    }
 
-            Customer customer02 = new Customer("ana_02");
+    private void runQuery(KieSession kSession) {
+        //QueryResults results = kSession.getQueryResults("FindClassNameStartingWith", Customer.class);
+        QueryResults results = kSession.getQueryResults("FindFlaggedCustomers");
 
-            Customer customer03 = new Customer("ana_03");
-            customer03.addItem(new Product("book", 10), 1);
-
-            final List<Customer> customers = Arrays.asList(customer01, customer02, customer03);
-
-            customerProcessor.process(kSession, customerEventListener, customers);
-
-            kSession.dispose();
-        } catch (Throwable t) {
-            t.printStackTrace();
+        for (QueryResultsRow row : results) {
+            Customer customer = (Customer) row.get("object");
+            System.out.println("Found " + customer);
         }
+    }
+
+    private int workOnFlaggedCustomers(List<Customer> flaggedCustomers) {
+        System.out.println("\t\tIn workOnFlaggedCustomers(" + flaggedCustomers.size() + ")");
+        int workedCustomers = 0;
+
+        for (Customer flaggedCustomer : flaggedCustomers) {
+            System.out.println("\t\t\t>> workOnFlaggedCustomer = " + flaggedCustomer);
+            workedCustomers++;
+        }
+
+        return workedCustomers;
     }
 
     private KieSession buildKieSession() {
@@ -140,9 +136,9 @@ public class AgendaGroupTest {
     private Map<String, String> buildRuleFiles() {
         Map<String, String> fileToContent = new HashMap<>();
 
-        String fileName = "agenda_groups.drl";
+        String fileName = "salience_grouping.drl";
 
-        String path = Utils.getResourceFilePath("agenda-groups/" + fileName);
+        String path = Utils.getResourceFilePath("grouping/" + fileName);
 
         System.out.println("### file = " + path);
 

@@ -1,3 +1,4 @@
+/** Free */
 package com.rtzan.drools;
 
 import java.util.LinkedList;
