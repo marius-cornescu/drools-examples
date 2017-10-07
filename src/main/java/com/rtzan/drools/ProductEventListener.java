@@ -1,32 +1,32 @@
 /** Free */
 package com.rtzan.drools;
 
+import com.rtzan.drools.model.Product;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.rtzan.drools.model.Customer;
 
+public class ProductEventListener extends DefaultEventListener {
 
-public class CustomerEventListener extends DefaultEventListener {
-
-    private List<Customer> customerList = new ArrayList<>();
+    private List<Product> products = new ArrayList<>();
 
     //~ ----------------------------------------------------------------------------------------------------------------
     //~ Methods 
     //~ ----------------------------------------------------------------------------------------------------------------
 
-    public final List<Customer> getCustomerList() {
-        return new ArrayList<>(customerList);
+    public final List<Product> getProductList() {
+        return new ArrayList<>(products);
     }
 
     @Override
     public void reset() {
         super.reset();
-        customerList.clear();
+        products.clear();
     }
 
     protected void afterActivationFired(String ruleName, List<Object> objects) {
-        customerList.addAll(objects.stream().map(o -> (Customer) o).collect(Collectors.toList()));
+        products.addAll(objects.stream().map(o -> (Product) o).collect(Collectors.toList()));
     }
 }

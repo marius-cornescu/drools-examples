@@ -11,7 +11,6 @@ import com.rtzan.drools.model.Product;
 import com.rtzan.drools.salience.CustomerGrouper;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import org.kie.api.KieServices;
@@ -41,25 +40,35 @@ public class SalienceGroupingTest {
     }
 
     @Test
-    @Ignore
-    public void testBasicAgendaGroup() throws Exception {
+    public void testSalienceGrouping() throws Exception {
         try {
             KieSession kSession = AgendaGroupHelper.createKieSession(null, buildRuleFiles());
             //KieSession kSession = buildSessionFromFiles(buildRuleFiles());
-            DefaultCustomerEventListener customerEventListener = new DefaultCustomerEventListener();
-            kSession.addEventListener(customerEventListener);
+            ProductEventListener eventListener = new ProductEventListener();
+            kSession.addEventListener(eventListener);
             //
-            Customer customer01 = new Customer("ana_01");
-            customer01.addItem(new Product("book", 10), 1);
+            Customer customer01 = new Customer("ana");
+            Customer customer02 = new Customer("mihai");
 
-            Customer customer02 = new Customer("ana_02");
+            Product book1 = new Product("book", 10);
+            Product book2 = new Product("big_book", 15);
+            Product book3 = new Product("book", 10);
+            Product book4 = new Product("big_book", 15);
 
-            Customer customer03 = new Customer("ana_03");
-            customer03.addItem(new Product("book", 10), 1);
+            Product alcohol1 = new Product("wine", 50);
 
-            final List<Customer> customers = Arrays.asList(customer01, customer02, customer03);
+            Product milk1 = new Product("milk", 5);
 
-            processCustomers(kSession, customerEventListener, customers);
+            book1.setCustomer(customer01);
+            book2.setCustomer(customer01);
+
+            book3.setCustomer(customer02);
+            milk1.setCustomer(customer02);
+            alcohol1.setCustomer(customer02);
+
+            final List<Product> products = Arrays.asList(book1, book2, book3, book4, milk1, alcohol1);
+
+            process(kSession, eventListener, products);
 
             //runQuery(kSession);
 
@@ -69,26 +78,26 @@ public class SalienceGroupingTest {
         }
     }
 
-    public void processCustomers(KieSession kSession, CustomerEventListener eventListener, final List<Customer> customers) {
-        for (Customer customer : customers) {
-            kSession.insert(customer);
+    private void process(KieSession kSession, ProductEventListener eventListener, final List<Product> products) {
+        for (Product product : products) {
+            kSession.insert(product);
         }
 
-        int activeCustomerCount = customers.size();
+        int activesCount = products.size();
 
-        System.out.println("\n## " + " ## Running focus" + "| >>> activeCustomerCount = " + activeCustomerCount);
+        System.out.println("\n## " + " ## Running focus" + "| >>> activesCount = " + activesCount);
 
         kSession.fireAllRules();
 
         // work on flagged facts, no need for them to wait for next run
-        int processedCustomers = workOnFlaggedCustomers(eventListener.getCustomerList());
+        int processedCustomers = workOnFlagged(eventListener.getProductList());
         eventListener.reset();
-        activeCustomerCount -= processedCustomers;
+        activesCount -= processedCustomers;
 
-        if (activeCustomerCount == 0) {
+        if (activesCount == 0) {
             System.out.println("####    ALL PROCESSED    ####");
         } else {
-            System.out.println("####    REMAINING Customers = " + activeCustomerCount + "    ####");
+            System.out.println("####    REMAINING = " + activesCount + "    ####");
         }
     }
 
@@ -107,12 +116,12 @@ public class SalienceGroupingTest {
         }
     }
 
-    private int workOnFlaggedCustomers(List<Customer> flaggedCustomers) {
-        System.out.println("\t\tIn workOnFlaggedCustomers(" + flaggedCustomers.size() + ")");
+    private int workOnFlagged(List<Product> flaggeds) {
+        System.out.println("\t\tIn workOnFlagged(" + flaggeds.size() + ")");
         int workedCustomers = 0;
 
-        for (Customer flaggedCustomer : flaggedCustomers) {
-            System.out.println("\t\t\t>> workOnFlaggedCustomer = " + flaggedCustomer);
+        for (Product flagged : flaggeds) {
+            System.out.println("\t\t\t>> workOnFlagged = " + flagged);
             workedCustomers++;
         }
 

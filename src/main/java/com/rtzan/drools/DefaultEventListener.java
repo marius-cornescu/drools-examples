@@ -1,13 +1,6 @@
 /** Free */
 package com.rtzan.drools;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import com.rtzan.drools.model.Customer;
-
 import org.kie.api.definition.rule.Rule;
 import org.kie.api.event.rule.AfterMatchFiredEvent;
 import org.kie.api.event.rule.AgendaGroupPoppedEvent;
@@ -17,12 +10,12 @@ import org.kie.api.event.rule.DefaultAgendaEventListener;
 import org.kie.api.event.rule.MatchCreatedEvent;
 import org.kie.api.runtime.rule.Match;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-public class DefaultCustomerEventListener extends DefaultAgendaEventListener implements CustomerEventListener {
 
-    //~ ----------------------------------------------------------------------------------------------------------------
-    //~ Static fields/initializers 
-    //~ ----------------------------------------------------------------------------------------------------------------
+public abstract class DefaultEventListener extends DefaultAgendaEventListener {
 
     private static final boolean DEBUG = true;
 
@@ -31,7 +24,6 @@ public class DefaultCustomerEventListener extends DefaultAgendaEventListener imp
     //~ ----------------------------------------------------------------------------------------------------------------
 
     private List<String> activationList = new ArrayList<>();
-    private List<Customer> customerList = new ArrayList<>();
 
     //~ ----------------------------------------------------------------------------------------------------------------
     //~ Methods 
@@ -58,20 +50,15 @@ public class DefaultCustomerEventListener extends DefaultAgendaEventListener imp
         afterActivationFired(event.getMatch());
     }
 
-    @Override
-    public final List<Customer> getCustomerList() {
-        return new ArrayList<>(customerList);
-    }
-
-    @Override
     public void reset() {
         activationList.clear();
-        customerList.clear();
     }
 
     List<String> getActivationList() {
         return new ArrayList<>(activationList);
     }
+
+    protected abstract void afterActivationFired(String ruleName, List<Object> objects);
 
 //    public void beforeRuleFlowGroupActivated(RuleFlowGroupActivatedEvent event) {
 //        System.out.println("beforeRuleFlowGroupActivated");
@@ -94,7 +81,7 @@ public class DefaultCustomerEventListener extends DefaultAgendaEventListener imp
         String ruleName = rule.getName();
 
         activationList.add(ruleName);
-        customerList.addAll(match.getObjects().stream().map(o -> (Customer) o).collect(Collectors.toList()));
+        afterActivationFired(ruleName, match.getObjects());
 
         if (DEBUG) {
             printActivationList(rule);

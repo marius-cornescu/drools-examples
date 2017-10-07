@@ -2,22 +2,31 @@ package com.rtzan.drools.model;
 
 public class Product {
 	private int price;
-	private String desc;
+	private String name;
+	private Customer customer;
 	
-	public Product(String desc, int price) {
-		this.desc = desc;
+	public Product(String name, int price) {
+		this.name = name;
 		this.price = price;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public int getPrice() {
 		return price;
 	}
 
-	public String getDesc() {
-		return desc;
+	public Customer getCustomer() {
+		return customer;
 	}
-	
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
+
 	public String toString() {
-		return "product: " + desc + ", price: " + price;
+		return "product: " + name + ", price: " + price;
 	}
 }

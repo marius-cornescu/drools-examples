@@ -17,8 +17,6 @@ import org.junit.Test;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.rule.QueryResults;
-import org.kie.api.runtime.rule.QueryResultsRow;
 
 
 /**
@@ -47,7 +45,7 @@ public class AgendaGroupTest {
         try {
             KieSession kSession = AgendaGroupHelper.createKieSession(null, buildRuleFiles());
             //KieSession kSession = buildSessionFromFiles(buildRuleFiles());
-            DefaultCustomerEventListener customerEventListener = new DefaultCustomerEventListener();
+            CustomerEventListener customerEventListener = new CustomerEventListener();
             kSession.addEventListener(customerEventListener);
             //
             Customer customer01 = new Customer("ana_01");
@@ -74,7 +72,7 @@ public class AgendaGroupTest {
     public void testAgendaGroupSomeMatch() throws Exception {
         try {
             KieSession kSession = buildSessionFromFiles(buildRuleFiles());
-            DefaultCustomerEventListener customerEventListener = new DefaultCustomerEventListener();
+            CustomerEventListener customerEventListener = new CustomerEventListener();
             kSession.addEventListener(customerEventListener);
             //
             Customer customer01 = new Customer("ana_01");
@@ -102,7 +100,7 @@ public class AgendaGroupTest {
     public void testEarlyMatchNotTriggerAllGroups() throws Exception {
         try {
             KieSession kSession = buildSessionFromFiles(buildRuleFiles());
-            DefaultCustomerEventListener customerEventListener = new DefaultCustomerEventListener();
+            CustomerEventListener customerEventListener = new CustomerEventListener();
             kSession.addEventListener(customerEventListener);
             //
             Customer customer01 = new Customer("ana_01");
