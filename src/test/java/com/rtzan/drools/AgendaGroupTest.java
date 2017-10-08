@@ -41,7 +41,7 @@ public class AgendaGroupTest {
     }
 
     @Test
-    @Ignore
+    //@Ignore
     public void testBasicAgendaGroup() throws Exception {
         try {
             //KieSession kSession = AgendaGroupHelper.createKieSession(null, buildRuleFiles());

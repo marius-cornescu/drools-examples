@@ -1,6 +1,7 @@
 /** Free */
 package com.rtzan.drools.agenda;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.rtzan.drools.AgendaGroupHelper;
@@ -29,8 +30,8 @@ public class CustomerProcessor {
 
         int activeCustomerCount = customers.size();
 
-        //List<String> agendaGroups = Arrays.asList("Group_01", "Group_02", "Group_03", "Group_04", "Group_05", "Group_06", "Group_07");
-        List<String> agendaGroups = AgendaGroupHelper.getAgendaGroupLabels(kSession);
+        List<String> agendaGroups = Arrays.asList("Group_01", "Group_02", "Group_03", "Group_04", "Group_05", "Group_06", "Group_07");
+        //List<String> agendaGroups = AgendaGroupHelper.getAgendaGroupLabels(kSession);
 
         int groupIndex = 0;
         for (String group : agendaGroups) {
