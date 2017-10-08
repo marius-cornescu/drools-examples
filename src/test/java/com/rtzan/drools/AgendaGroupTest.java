@@ -17,12 +17,13 @@ import org.junit.Test;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
-/**
- * This is a sample class to launch a rule.
- */
 public class AgendaGroupTest {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     //~ ----------------------------------------------------------------------------------------------------------------
     //~ Instance fields 
@@ -43,8 +44,8 @@ public class AgendaGroupTest {
     @Ignore
     public void testBasicAgendaGroup() throws Exception {
         try {
-            KieSession kSession = AgendaGroupHelper.createKieSession(null, buildRuleFiles());
-            //KieSession kSession = buildSessionFromFiles(buildRuleFiles());
+            //KieSession kSession = AgendaGroupHelper.createKieSession(null, buildRuleFiles());
+            KieSession kSession = buildSessionFromFiles(buildRuleFiles());
             CustomerEventListener customerEventListener = new CustomerEventListener();
             kSession.addEventListener(customerEventListener);
             //
@@ -142,7 +143,7 @@ public class AgendaGroupTest {
 
         String path = Utils.getResourceFilePath("agenda-groups/" + fileName);
 
-        System.out.println("### file = " + path);
+        logger.info("### file = " + path);
 
         fileToContent.put(fileName, Utils.fileToString(path));
 

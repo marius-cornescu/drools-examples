@@ -12,9 +12,13 @@ import org.junit.Test;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.StatelessKieSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class DecisionTableTest {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     //~ ----------------------------------------------------------------------------------------------------------------
     //~ Methods 
@@ -28,7 +32,7 @@ public class DecisionTableTest {
     @Ignore
     public void testDecisionTable() throws Exception {
         KieContainer kc = KieServices.Factory.get().getKieClasspathContainer();
-        System.out.println(kc.verify().getMessages().toString());
+        logger.info(kc.verify().getMessages().toString());
         StatelessKieSession ksession = kc.newStatelessKieSession("DecisionTableKS");
 
         //now create some test data
@@ -37,8 +41,8 @@ public class DecisionTableTest {
 
         ksession.execute(Arrays.asList(new Object[] { driver, policy }));
 
-        System.out.println("BASE PRICE IS: " + policy.getBasePrice());
-        System.out.println("DISCOUNT IS: " + policy.getDiscountPercent());
+        logger.info("BASE PRICE IS: " + policy.getBasePrice());
+        logger.info("DISCOUNT IS: " + policy.getDiscountPercent());
 
         int price = policy.getBasePrice();
     }

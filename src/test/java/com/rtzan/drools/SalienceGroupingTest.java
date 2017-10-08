@@ -1,23 +1,25 @@
-/** Free */
+/**
+ * Free
+ */
 package com.rtzan.drools;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import com.rtzan.drools.model.Customer;
 import com.rtzan.drools.model.Product;
 import com.rtzan.drools.salience.CustomerGrouper;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.QueryResultsRow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -28,7 +30,8 @@ public class SalienceGroupingTest {
     //~ Instance fields 
     //~ ----------------------------------------------------------------------------------------------------------------
 
-    private CustomerGrouper customerGrouper;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
 
     //~ ----------------------------------------------------------------------------------------------------------------
     //~ Methods 
@@ -36,46 +39,41 @@ public class SalienceGroupingTest {
 
     @Before
     public void setUp() {
-        customerGrouper = new CustomerGrouper();
     }
 
     @Test
     public void testSalienceGrouping() throws Exception {
-        try {
-            KieSession kSession = AgendaGroupHelper.createKieSession(null, buildRuleFiles());
-            //KieSession kSession = buildSessionFromFiles(buildRuleFiles());
-            ProductEventListener eventListener = new ProductEventListener();
-            kSession.addEventListener(eventListener);
-            //
-            Customer customer01 = new Customer("ana");
-            Customer customer02 = new Customer("mihai");
+        KieSession kSession = buildSessionFromFiles(buildRuleFiles());
 
-            Product book1 = new Product("book", 10);
-            Product book2 = new Product("big_book", 15);
-            Product book3 = new Product("book", 10);
-            Product book4 = new Product("big_book", 15);
+        ProductEventListener eventListener = new ProductEventListener();
+        kSession.addEventListener(eventListener);
+        //
+        Customer customer01 = new Customer("ana");
+        Customer customer02 = new Customer("mihai");
 
-            Product alcohol1 = new Product("wine", 50);
+        Product book1 = new Product("book", 10);
+        Product book2 = new Product("big_book", 15);
+        Product book3 = new Product("book", 10);
+        Product book4 = new Product("big_book", 15);
 
-            Product milk1 = new Product("milk", 5);
+        Product alcohol1 = new Product("wine", 50);
 
-            book1.setCustomer(customer01);
-            book2.setCustomer(customer01);
+        Product milk1 = new Product("milk", 5);
 
-            book3.setCustomer(customer02);
-            milk1.setCustomer(customer02);
-            alcohol1.setCustomer(customer02);
+        book1.setCustomer(customer01);
+        book2.setCustomer(customer01);
 
-            final List<Product> products = Arrays.asList(book1, book2, book3, book4, milk1, alcohol1);
+        book3.setCustomer(customer02);
+        milk1.setCustomer(customer02);
+        alcohol1.setCustomer(customer02);
 
-            process(kSession, eventListener, products);
+        final List<Product> products = Arrays.asList(book1, book2, book3, book4, milk1, alcohol1);
 
-            //runQuery(kSession);
+        process(kSession, eventListener, products);
 
-            kSession.dispose();
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
+        //runQuery(kSession);
+
+        kSession.dispose();
     }
 
     private void process(KieSession kSession, ProductEventListener eventListener, final List<Product> products) {
@@ -85,54 +83,20 @@ public class SalienceGroupingTest {
 
         int activesCount = products.size();
 
-        System.out.println("\n## " + " ## Running focus" + "| >>> activesCount = " + activesCount);
+        logger.info("## " + " ## Running focus" + "| >>> activesCount = " + activesCount);
 
         kSession.fireAllRules();
 
         // work on flagged facts, no need for them to wait for next run
-        int processedCustomers = workOnFlagged(eventListener.getProductList());
+        int processed = workOnFlagged(eventListener.getProductList());
         eventListener.reset();
-        activesCount -= processedCustomers;
+        activesCount -= processed;
 
         if (activesCount == 0) {
-            System.out.println("####    ALL PROCESSED    ####");
+            logger.info("####    ALL PROCESSED    ####");
         } else {
-            System.out.println("####    REMAINING = " + activesCount + "    ####");
+            logger.info("####    REMAINING = " + activesCount + "    ####");
         }
-    }
-
-    private int countCustomers(KieSession kSession) {
-        QueryResults results = kSession.getQueryResults("getCustomers");
-        return results.size();
-    }
-
-    private void runQuery(KieSession kSession) {
-        //QueryResults results = kSession.getQueryResults("FindClassNameStartingWith", Customer.class);
-        QueryResults results = kSession.getQueryResults("FindFlaggedCustomers");
-
-        for (QueryResultsRow row : results) {
-            Customer customer = (Customer) row.get("object");
-            System.out.println("Found " + customer);
-        }
-    }
-
-    private int workOnFlagged(List<Product> flaggeds) {
-        System.out.println("\t\tIn workOnFlagged(" + flaggeds.size() + ")");
-        int workedCustomers = 0;
-
-        for (Product flagged : flaggeds) {
-            System.out.println("\t\t\t>> workOnFlagged = " + flagged);
-            workedCustomers++;
-        }
-
-        return workedCustomers;
-    }
-
-    private KieSession buildKieSession() {
-        // load up the knowledge base
-        KieServices ks = KieServices.Factory.get();
-        KieContainer kContainer = ks.getKieClasspathContainer();
-        return kContainer.newKieSession("ksession-rules");
     }
 
     private KieSession buildSessionFromFiles(Map<String, String> drlFilePaths) {
@@ -142,6 +106,28 @@ public class SalienceGroupingTest {
         return kContainer.newKieSession();
     }
 
+    private void runQuery(KieSession kSession) {
+        //QueryResults results = kSession.getQueryResults("FindClassNameStartingWith", Customer.class);
+        QueryResults results = kSession.getQueryResults("FindFlaggedCustomers");
+
+        for (QueryResultsRow row : results) {
+            Customer customer = (Customer) row.get("object");
+            logger.info("Found " + customer);
+        }
+    }
+
+    private int workOnFlagged(List<Product> flaggeds) {
+        logger.info("\t\tIn workOnFlagged(" + flaggeds.size() + ")");
+        int workeds = 0;
+
+        for (Product flagged : flaggeds) {
+            logger.info("\t\t\t>> workOnFlagged = " + flagged);
+            workeds++;
+        }
+
+        return workeds;
+    }
+
     private Map<String, String> buildRuleFiles() {
         Map<String, String> fileToContent = new HashMap<>();
 
@@ -149,9 +135,13 @@ public class SalienceGroupingTest {
 
         String path = Utils.getResourceFilePath("grouping/" + fileName);
 
-        System.out.println("### file = " + path);
+        logger.info("### file = " + path);
 
-        fileToContent.put(fileName, Utils.fileToString(path));
+        String fileContent = Utils.fileToString(path);
+
+        logger.info("### file size = " + fileContent.length());
+
+        fileToContent.put(fileName, fileContent);
 
         return fileToContent;
     }

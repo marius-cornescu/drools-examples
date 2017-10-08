@@ -10,12 +10,16 @@ import org.junit.Test;
 import org.kie.internal.KnowledgeBase;
 import org.kie.internal.builder.DecisionTableInputType;
 import org.kie.internal.runtime.StatelessKnowledgeSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
  * Created by ${USERNAME} on 9/17/17.
  */
 public class LegacyDecisionTableTest {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     //~ ----------------------------------------------------------------------------------------------------------------
     //~ Instance fields 
@@ -62,7 +66,7 @@ public class LegacyDecisionTableTest {
 
         session.execute(customer);
 
-        System.out.println("First Customer\n" + customer);
+        logger.info("First Customer\n" + customer);
 
         Customer newCustomer = new Customer("ana_02");
         newCustomer.addItem(p1, 1);
@@ -70,8 +74,8 @@ public class LegacyDecisionTableTest {
 
         session.execute(newCustomer);
 
-        System.out.println("*********************************");
-        System.out.println("Second Customer\n" + customer);
+        logger.info("*********************************");
+        logger.info("Second Customer\n" + customer);
     }
 
 }

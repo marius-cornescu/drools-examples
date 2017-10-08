@@ -19,16 +19,20 @@ import org.kie.api.builder.ReleaseId;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class LoadFileToMemory {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     //~ ----------------------------------------------------------------------------------------------------------------
     //~ Methods 
     //~ ----------------------------------------------------------------------------------------------------------------
 
     public KieContainer build(KieServices kieServices, Map<String, String> drlFilePaths) {
-        return build(kieServices, "com.rtzan.drools", "agenda-groups", drlFilePaths);
+        return build(kieServices, "com.rtzan.drools", "in-memory", drlFilePaths);
     }
 
     public KieContainer build(KieServices kieServices, String groupId, String artifactId, Map<String, String> drlFilePaths) {
@@ -75,7 +79,7 @@ public class LoadFileToMemory {
     }
 
     private void addRule(KieServices kieServices, KieFileSystem kieFileSystem, String drlFilePath, String drlFileContent) {
-        System.out.println("<< file name = [" + drlFilePath + "]; file content = [" + drlFileContent + "]");
+        logger.trace("<< file name = [" + drlFilePath + "]; file content = [" + drlFileContent + "]");
         kieFileSystem.write("src/main/resources/" + drlFilePath, getResource(kieServices, drlFileContent));
     }
 

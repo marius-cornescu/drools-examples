@@ -8,7 +8,11 @@ import org.kie.api.event.rule.AgendaGroupPushedEvent;
 import org.kie.api.event.rule.BeforeMatchFiredEvent;
 import org.kie.api.event.rule.DefaultAgendaEventListener;
 import org.kie.api.event.rule.MatchCreatedEvent;
+import org.kie.api.event.rule.RuleFlowGroupActivatedEvent;
+import org.kie.api.event.rule.RuleFlowGroupDeactivatedEvent;
 import org.kie.api.runtime.rule.Match;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +21,7 @@ import java.util.Map;
 
 public abstract class DefaultEventListener extends DefaultAgendaEventListener {
 
-    private static final boolean DEBUG = true;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     //~ ----------------------------------------------------------------------------------------------------------------
     //~ Instance fields 
@@ -30,23 +34,23 @@ public abstract class DefaultEventListener extends DefaultAgendaEventListener {
     //~ ----------------------------------------------------------------------------------------------------------------
 
     public void agendaGroupPushed(AgendaGroupPushedEvent event) {
-        System.out.println("1. agendaGroupPushed"); // after "kSession.getAgenda().getAgendaGroup(group).setFocus()"
+        logger.trace("1. agendaGroupPushed"); // after "kSession.getAgenda().getAgendaGroup(group).setFocus()"
     }
 
     public void agendaGroupPopped(AgendaGroupPoppedEvent event) {
-        System.out.println("agendaGroupPopped"); //
+        logger.trace("agendaGroupPopped"); //
     }
 
     public void matchCreated(MatchCreatedEvent event) {
-        System.out.println("2*. matchCreated");
+        logger.trace("2*. matchCreated");
     }
 
     public void beforeMatchFired(BeforeMatchFiredEvent event) {
-        System.out.println("3*. beforeMatchFired");
+        logger.trace("3*. beforeMatchFired");
     }
 
     public void afterMatchFired(AfterMatchFiredEvent event) {
-        System.out.println("4*. afterMatchFired"); //
+        logger.trace("4*. afterMatchFired"); //
         afterActivationFired(event.getMatch());
     }
 
@@ -60,21 +64,21 @@ public abstract class DefaultEventListener extends DefaultAgendaEventListener {
 
     protected abstract void afterActivationFired(String ruleName, List<Object> objects);
 
-//    public void beforeRuleFlowGroupActivated(RuleFlowGroupActivatedEvent event) {
-//        System.out.println("beforeRuleFlowGroupActivated");
-//    }
-//
-//    public void afterRuleFlowGroupActivated(RuleFlowGroupActivatedEvent event) {
-//        System.out.println("afterRuleFlowGroupActivated");
-//    }
-//
-//    public void beforeRuleFlowGroupDeactivated(RuleFlowGroupDeactivatedEvent event) {
-//        System.out.println("beforeRuleFlowGroupDeactivated");
-//    }
-//
-//    public void afterRuleFlowGroupDeactivated(RuleFlowGroupDeactivatedEvent event) {
-//        System.out.println("afterRuleFlowGroupDeactivated");
-//    }
+    public void beforeRuleFlowGroupActivated(RuleFlowGroupActivatedEvent event) {
+        logger.trace("beforeRuleFlowGroupActivated");
+    }
+
+    public void afterRuleFlowGroupActivated(RuleFlowGroupActivatedEvent event) {
+        logger.trace("afterRuleFlowGroupActivated");
+    }
+
+    public void beforeRuleFlowGroupDeactivated(RuleFlowGroupDeactivatedEvent event) {
+        logger.trace("beforeRuleFlowGroupDeactivated");
+    }
+
+    public void afterRuleFlowGroupDeactivated(RuleFlowGroupDeactivatedEvent event) {
+        logger.trace("afterRuleFlowGroupDeactivated");
+    }
 
     private void afterActivationFired(Match match) {
         Rule rule = match.getRule();
@@ -83,7 +87,7 @@ public abstract class DefaultEventListener extends DefaultAgendaEventListener {
         activationList.add(ruleName);
         afterActivationFired(ruleName, match.getObjects());
 
-        if (DEBUG) {
+        if (logger.isDebugEnabled()) {
             printActivationList(rule);
         }
     }
@@ -101,6 +105,6 @@ public abstract class DefaultEventListener extends DefaultAgendaEventListener {
             }
         }
 
-        System.out.println(sb.toString());
+        logger.debug(sb.toString());
     }
 }

@@ -10,9 +10,13 @@ import com.rtzan.drools.model.Customer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.QueryResultsRow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class CustomerProcessor {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     //~ ----------------------------------------------------------------------------------------------------------------
     //~ Methods 
@@ -30,7 +34,7 @@ public class CustomerProcessor {
 
         int groupIndex = 0;
         for (String group : agendaGroups) {
-            System.out.println("\n## " + (++groupIndex) + " ## Running with [" + group + "] group in focus" + "| >>> activeCustomerCount = " + activeCustomerCount);
+            logger.info("\n## " + (++groupIndex) + " ## Running with [" + group + "] group in focus" + "| >>> activeCustomerCount = " + activeCustomerCount);
 
             kSession.getAgenda().getAgendaGroup(group).setFocus();
 
@@ -51,18 +55,18 @@ public class CustomerProcessor {
         }
 
         if (activeCustomerCount == 0) {
-            System.out.println("####    ALL PROCESSED    ####");
+            logger.info("####    ALL PROCESSED    ####");
         } else {
-            System.out.println("####    REMAINING Customers = " + activeCustomerCount + "    ####");
+            logger.info("####    REMAINING Customers = " + activeCustomerCount + "    ####");
         }
     }
 
     private int workOnFlaggedCustomers(List<Customer> flaggedCustomers) {
-        System.out.println("\t\tIn workOnFlaggedCustomers(" + flaggedCustomers.size() + ")");
+        logger.info("\t\tIn workOnFlaggedCustomers(" + flaggedCustomers.size() + ")");
         int workedCustomers = 0;
 
         for (Customer flaggedCustomer : flaggedCustomers) {
-            System.out.println("\t\t\t>> workOnFlaggedCustomer = " + flaggedCustomer);
+            logger.info("\t\t\t>> workOnFlaggedCustomer = " + flaggedCustomer);
             workedCustomers++;
         }
 
@@ -80,7 +84,7 @@ public class CustomerProcessor {
 
         for (QueryResultsRow row : results) {
             Customer customer = (Customer) row.get("object");
-            System.out.println("Found " + customer);
+            logger.info("Found " + customer);
         }
     }
 }

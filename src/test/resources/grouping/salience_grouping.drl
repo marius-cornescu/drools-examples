@@ -3,23 +3,12 @@ package com.rtzan.drools
 import com.rtzan.drools.model.*
 
 
-rule "Rule_01" salience -1
+rule "Rule_01"
+no-loop
+
     when
-        price : Price( flagged == false && hasProductsInCart() == true && name str[startsWith] "ana_0" )
+        price : Product(  )
     then
         System.out.println("\t> Rule_01 just fired for " + price + " == FLAG");
-        price.setFlagged(true);
 
 end
-
-rule "Rule_02" salience -2
-
-    when
-        $listOfAs : ArrayList collect(Price())
-    then
-        for (Object a: $listOfAs ) {
-          retract (a)
-        }
-
-end
-
