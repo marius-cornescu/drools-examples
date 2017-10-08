@@ -27,6 +27,9 @@ public class ProductEventListener extends DefaultEventListener {
     }
 
     protected void afterActivationFired(String ruleName, List<Object> objects) {
-        products.addAll(objects.stream().map(o -> (Product) o).collect(Collectors.toList()));
+        if (objects == null || objects.isEmpty() || !(objects.get(0) instanceof Product)) {
+            return;
+        }
+        //products.addAll(objects.stream().map(o -> (Product) o).collect(Collectors.toList()));
     }
 }

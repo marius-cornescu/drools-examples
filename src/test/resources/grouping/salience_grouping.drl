@@ -2,13 +2,62 @@ package com.rtzan.drools
 
 import com.rtzan.drools.model.*
 
+import java.util.ArrayList;
+import java.util.List;
 
-rule "Rule_01"
-no-loop
+
+rule "Rule_01" /* No alcohol if you buy milk */
+    salience -1
+    no-loop
 
     when
-        price : Product(  )
+        milk : Product( name == "milk", price > 0, $customer: customer )
+        book : Product( name == "book", price > 0, customer == $customer )
+        $productsOfCustomer : List()
+            from collect( Product( customer == $customer ) )
     then
-        System.out.println("\t> Rule_01 just fired for " + price + " == FLAG");
+        System.out.println("\t> Rule_01 just fired for (" + $customer + ") with (" + milk + ", " + book + ")\n");
 
+        Receipt $receipt = new Receipt($customer);
+        $receipt.addCombo(milk.getName(), milk.getPrice());
+        $receipt.addCombo(book.getName(), book.getPrice());
+        insert( $receipt );
+
+        for (Object a: $productsOfCustomer ) { retract (a) }
+
+end
+
+rule "Rule_02" /* You have big-book, ignore the rest */
+    salience -2
+    no-loop
+
+    when
+        big_book : Product( name == "big_book", price > 0, $customer: customer )
+        $productsOfCustomer : List()
+            from collect( Product( customer == $customer ) )
+    then
+        System.out.println("\t> Rule_02 just fired for (" + $customer + ") with (" + big_book + ")\n");
+
+        Receipt $receipt = new Receipt($customer);
+        $receipt.addCombo(big_book.getName(), big_book.getPrice());
+        insert( $receipt );
+
+        for (Object a: $productsOfCustomer ) { retract (a) }
+
+end
+
+rule "Rule_03" /* No milk, no books */
+    salience -3
+    no-loop
+
+    when
+        prod : Product(  )
+    then
+        System.out.println("\t> Rule_03 just fired for (" + prod.getCustomer() + ") with (" + prod + ")\n");
+
+end
+
+
+query "FindReceipts" ()
+    object: Receipt(  )
 end

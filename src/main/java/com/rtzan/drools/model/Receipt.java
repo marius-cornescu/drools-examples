@@ -25,4 +25,12 @@ public class Receipt {
     public void addCombo(String name, int price) {
         combo.put(name, price);
     }
+
+    @Override
+    public String toString() {
+        return "Receipt{" +
+                "customer=" + customer +
+                ", combo=" + combo +
+                '}';
+    }
 }

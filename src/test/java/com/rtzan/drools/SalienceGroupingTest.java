@@ -5,7 +5,8 @@ package com.rtzan.drools;
 
 import com.rtzan.drools.model.Customer;
 import com.rtzan.drools.model.Product;
-import com.rtzan.drools.salience.CustomerGrouper;
+import com.rtzan.drools.model.Receipt;
+import com.rtzan.drools.salience.SalienceGrouper;
 import org.junit.Before;
 import org.junit.Test;
 import org.kie.api.KieServices;
@@ -20,6 +21,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 
 /**
@@ -32,6 +35,8 @@ public class SalienceGroupingTest {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    private SalienceGrouper grouper;
+
 
     //~ ----------------------------------------------------------------------------------------------------------------
     //~ Methods 
@@ -39,6 +44,7 @@ public class SalienceGroupingTest {
 
     @Before
     public void setUp() {
+        grouper = new SalienceGrouper();
     }
 
     @Test
@@ -50,6 +56,8 @@ public class SalienceGroupingTest {
         //
         Customer customer01 = new Customer("ana");
         Customer customer02 = new Customer("mihai");
+        Customer customer03 = new Customer("jeean");
+        Customer customer04 = new Customer("bob");
 
         Product book1 = new Product("book", 10);
         Product book2 = new Product("big_book", 15);
@@ -57,6 +65,7 @@ public class SalienceGroupingTest {
         Product book4 = new Product("big_book", 15);
 
         Product alcohol1 = new Product("wine", 50);
+        Product alcohol2 = new Product("vodka", 50);
 
         Product milk1 = new Product("milk", 5);
 
@@ -67,36 +76,21 @@ public class SalienceGroupingTest {
         milk1.setCustomer(customer02);
         alcohol1.setCustomer(customer02);
 
-        final List<Product> products = Arrays.asList(book1, book2, book3, book4, milk1, alcohol1);
+        book4.setCustomer(customer03);
 
-        process(kSession, eventListener, products);
+        alcohol2.setCustomer(customer04);
 
-        //runQuery(kSession);
+        final List<Product> products = Arrays.asList(book1, book2, book3, book4, milk1, alcohol1, alcohol2);
+
+        grouper.process(kSession, eventListener, products);
+
+        List<Receipt> receipts = runQuery(kSession, "FindReceipts");
+
+        for (Receipt receipt : receipts) {
+            logger.info("### Receipt: [{}]", receipt);
+        }
 
         kSession.dispose();
-    }
-
-    private void process(KieSession kSession, ProductEventListener eventListener, final List<Product> products) {
-        for (Product product : products) {
-            kSession.insert(product);
-        }
-
-        int activesCount = products.size();
-
-        logger.info("## " + " ## Running focus" + "| >>> activesCount = " + activesCount);
-
-        kSession.fireAllRules();
-
-        // work on flagged facts, no need for them to wait for next run
-        int processed = workOnFlagged(eventListener.getProductList());
-        eventListener.reset();
-        activesCount -= processed;
-
-        if (activesCount == 0) {
-            logger.info("####    ALL PROCESSED    ####");
-        } else {
-            logger.info("####    REMAINING = " + activesCount + "    ####");
-        }
     }
 
     private KieSession buildSessionFromFiles(Map<String, String> drlFilePaths) {
@@ -106,26 +100,15 @@ public class SalienceGroupingTest {
         return kContainer.newKieSession();
     }
 
-    private void runQuery(KieSession kSession) {
-        //QueryResults results = kSession.getQueryResults("FindClassNameStartingWith", Customer.class);
-        QueryResults results = kSession.getQueryResults("FindFlaggedCustomers");
+    private <T> List<T> runQuery(KieSession kSession, String queryName) {
+        QueryResults results = kSession.getQueryResults(queryName);
 
         for (QueryResultsRow row : results) {
-            Customer customer = (Customer) row.get("object");
-            logger.info("Found " + customer);
-        }
-    }
-
-    private int workOnFlagged(List<Product> flaggeds) {
-        logger.info("\t\tIn workOnFlagged(" + flaggeds.size() + ")");
-        int workeds = 0;
-
-        for (Product flagged : flaggeds) {
-            logger.info("\t\t\t>> workOnFlagged = " + flagged);
-            workeds++;
+            T fact = (T) row.get("object");
+            logger.debug("Found: " + fact);
         }
 
-        return workeds;
+        return (List<T>) StreamSupport.stream(results.spliterator(), false).map(r -> r.get("object")).collect(Collectors.toList());
     }
 
     private Map<String, String> buildRuleFiles() {

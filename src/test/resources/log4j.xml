@@ -9,6 +9,13 @@
         </layout>
     </appender>
 
+    <category name="com.rtzan.drools.DefaultEventListener">
+        <priority value="INFO" />
+    </category>
+    <category name="com.rtzan.drools.ProductEventListener">
+        <priority value="INFO" />
+    </category>
+
     <root>
         <level value="DEBUG" />
         <appender-ref ref="console" />
